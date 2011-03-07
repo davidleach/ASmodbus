@@ -6,7 +6,6 @@ package com.solydest.modbus.events
 	 * Results is an array where the first element is the starting address of the 
 	 * write request and the second element is the quantity of registers written.
 	 *   
-	 * @author leachd
 	 * 
 	 */	
 	public class WriteMultipleRegistersResponseEvent extends ModbusResponseEvent

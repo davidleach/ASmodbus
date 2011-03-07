@@ -6,8 +6,7 @@ package com.solydest.modbus.events
 	 * Results is an array of bits.  The first coil in the request is the first element in the
 	 * array.  If the requested number of coils % 8 is greater than zero, the result will 
 	 * be padded with 0's until the length of the array % 8 is 0;
-	 *   
-	 * @author leachd
+	 * 
 	 * 
 	 */	
 	public class ReadCoilsResponseEvent extends ModbusResponseEvent

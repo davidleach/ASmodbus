@@ -7,7 +7,6 @@ package com.solydest.modbus.events
 	 * array.  If the requested number of inputs % 8 is greater than zero, the result will 
 	 * be padded with 0's until the length of the array % 8 is 0;
 	 *   
-	 * @author leachd
 	 * 
 	 */	
 	public class ReadInputDiscretesResponseEvent extends ModbusResponseEvent

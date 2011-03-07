@@ -6,7 +6,6 @@ package com.solydest.modbus.events
 	 * Results is an array of register values.  The first entry in the array is the 
 	 * register at the starting address of the request.
 	 *   
-	 * @author leachd
 	 * 
 	 */	
 	public class ReadMultipleRegistersResponseEvent extends ModbusResponseEvent

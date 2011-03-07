@@ -4,10 +4,8 @@ package com.solydest.modbus
 	import com.solydest.modbus.events.ReadInputDiscretesResponseEvent;
 	import com.solydest.modbus.events.ReadInputRegistersResponseEvent;
 	import com.solydest.modbus.events.ReadMultipleRegistersResponseEvent;
-	import com.solydest.modbus.events.ReadStringResponseEvent;
 	import com.solydest.modbus.events.WriteCoilResponseEvent;
 	import com.solydest.modbus.events.WriteMultipleRegistersResponseEvent;
-	import com.solydest.modbus.events.WriteStringResponseEvent;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -28,7 +26,6 @@ package com.solydest.modbus
 	 * transaction ID.  If provided, the response event will also contain that transaction Id
 	 * to assist the user of this class in managing multiple requests.
 	 *  
-	 * @author leachd
 	 * 
 	 */	
 	public class ModbusSlave extends EventDispatcher implements IModbusSlave
@@ -241,83 +238,7 @@ package com.solydest.modbus
 			reqData.push(value & 255);					// value lower
 			this.sendBuffer.push(reqData);
 		}
-		
-		/**
-		 * Provides functionality for Custom Modbus function code 114 (0x72), 
-		 * String Read.
-		 * 
-		 * Custom command frame is formatted as:
-		 * [Bytes]	[Function]
-		 *   2		Transaction ID
-		 *   2		Protocol ID
-		 *   2		Frame Size
-		 *   1		Device ID
-		 *   1		Function Code (0x72)
-		 *   2		String Index
-		 * 
-		 * Reply frame is formatted as:
-		 * [Bytes]	[Function]
-		 *   2		Transaction ID
-		 *   2 		Protocol ID
-		 *   2		Frame Size
-		 *   1		Device ID
-		 *   1		Function Code (0x72)
-		 *   2		String Index
-		 *   ~		String Data (limited by frame size)
-		 *  
-		 * @param index
-		 * @param transactionId
-		 * 
-		 */		
-		public function readString(index:int, transactionId:int = 0):void
-		{
-			var reqData:Array = buildHeader(transactionId, 4, 114);
-			reqData.push(index >> 8);					// string index upper byte
-			reqData.push(index & 255);					// string index lower byte
-			this.sendBuffer.push(reqData);
-		}
-		
-		/**
-		 * Provides functionality for Custom Modbus function code 115 (0x73),
-		 * String Write.
-		 * 
-		 * Custom command frame is formatted as:
-		 * [Bytes]	[Function]
-		 *   2		Transaction ID
-		 *   2		Protocol ID
-		 *   2		Frame Size
-		 *   1		Device ID
-		 *   1		Function Code (0x73)
-		 *   2		String Index
-		 *   ~		STring Data (limited by frame size)
-		 * 
-		 * Reply frame is formatted as:
-		 * [Bytes]	[Function]
-		 *   2		Transaction ID
-		 *   2 		Protocol ID
-		 *   2		Frame Size
-		 *   1		Device ID
-		 *   1		Function Code (0x73)
-		 *  
-		 * @param index
-		 * @param value
-		 * @param transactionId
-		 * 
-		 */		
-		public function writeString(index:int, value:String, transactionId:int = 0):void
-		{
-			var newValue:String = value;
-			var reqData:Array = buildHeader(transactionId, 5 + value.length, 115);	// the length includes the null terminator for the string
-			reqData.push(index >> 8);												// string index upper byte
-			reqData.push(index & 255);												// string index lower byte
-			for (var i:int = 0; i < value.length; i++)
-			{
-				reqData.push(value.charCodeAt(i));									// convert string to array of ascii bytes
-			}
-			reqData.push(0x00);														// null terminator
-			this.sendBuffer.push(reqData);
-		}
-		
+				
 		//////////////////////////////////////////////////////
 		//
 		//	Private Class Methods
@@ -507,35 +428,6 @@ package com.solydest.modbus
 					results.push((retData.shift() * 256) + retData.shift());	// the starting address
 					results.push((retData.shift() * 256) + retData.shift());	// quantity of registers
 					dispatchEvent(new WriteMultipleRegistersResponseEvent(transactionId, results));
-					break;
-				case 114: // read string
-					var stringIndex:int;
-					stringIndex = ((retData.shift() * 256) + retData.shift());
-					if (stringIndex == 4)		// the returned data format is raw bytes
-					{
-						for (i = 0; i < retData.length; i++)
-						{
-							results.push(retData[i]);
-						}
-							
-					}
-					else if (stringIndex == 5)	// the returned data is a number
-					{
-						results.push(retData.shift());	// this assumes that the number returned is one byte in length
-					}
-					else						// the returned data is a string
-					{
-						for (i = 0; i < retData.length; i++)
-						{
-							results.push(String.fromCharCode(retData[i]));			// convert the ascii codes into characters
-						}
-					}
-					
-					dispatchEvent(new ReadStringResponseEvent(transactionId, results, stringIndex));
-					break;
-				case 115: // write string
-					results.push(functionCode);
-					dispatchEvent(new WriteStringResponseEvent(transactionId, results));
 					break;
 				case 129: // read coils error
 					

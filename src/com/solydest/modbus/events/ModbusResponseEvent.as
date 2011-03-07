@@ -9,7 +9,6 @@ package com.solydest.modbus.events
 	 * constants when adding an event listener for a specific Modbus response event i.e. -
 	 * [some object].addEventListener(ModbusResponseEvent.READ_COILS, readCoils_ResultHandler, false, 0, true);
 	 *   
-	 * @author leachd
 	 * 
 	 */	
 	public class ModbusResponseEvent extends Event
@@ -21,8 +20,6 @@ package com.solydest.modbus.events
 		public static const READ_INPUT_REGISTERS:String = "readInputRegistersResponseEvent";
 		public static const WRITE_COIL:String = "writeCoilResponseEvent";
 		public static const WRITE_REGISTER:String = "writeRegisterResponseEvent";
-		public static const READ_STRING:String = "readStringResponseEvent";
-		public static const WRITE_STRING:String = "writeStringResponseEvent";
 		
 		public var transactionId:int;
 		public var results:Array;
